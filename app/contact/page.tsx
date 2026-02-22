@@ -25,20 +25,47 @@ export default function Contact() {
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    // Simulate API call
-    await new Promise((resolve) => setTimeout(resolve, 1500));
-    setIsSubmitting(false);
-    setIsSuccess(true);
+    setErrorMessage("");
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(formState),
+      });
+
+      if (!response.ok) {
+        const data = (await response.json()) as { error?: string };
+        throw new Error(data?.error || "Unable to send your message.");
+      }
+
+      setIsSuccess(true);
+      setFormState({
+        name: "",
+        email: "",
+        phone: "",
+        clinic: "",
+        message: "",
+      });
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error ? error.message : "Unable to send your message.",
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <>
       <Navbar />
-      <main className="flex-grow pt-24">
+      <main className="grow pt-24">
         <SectionWrapper className="bg-medical-blue/5">
           <div className="max-w-4xl mx-auto text-center space-y-6">
             <h1 className="font-poppins font-bold text-4xl md:text-6xl text-text-dark">
@@ -137,6 +164,11 @@ export default function Contact() {
                 </motion.div>
               ) : (
                 <form onSubmit={handleSubmit} className="space-y-6">
+                  {errorMessage && (
+                    <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+                      {errorMessage}
+                    </div>
+                  )}
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
                       <label className="text-sm font-bold text-text-dark/70 ml-1">
@@ -234,16 +266,6 @@ export default function Contact() {
                   </button>
                 </form>
               )}
-            </div>
-          </div>
-        </SectionWrapper>
-
-        {/* Map Placeholder */}
-        <SectionWrapper className="bg-medical-blue/5 py-0 px-0 md:px-0 lg:px-0">
-          <div className="w-full h-96 bg-medical-blue/10 flex items-center justify-center border-y border-medical-blue/20">
-            <div className="text-primary/30 font-bold text-xl uppercase tracking-widest flex items-center gap-2">
-              <MapPin />
-              Google Maps Integration
             </div>
           </div>
         </SectionWrapper>
