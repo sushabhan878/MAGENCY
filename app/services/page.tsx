@@ -5,6 +5,7 @@ import Footer from "../components/Footer";
 import SectionWrapper from "../components/SectionWrapper";
 import PricingCard from "../components/PricingCard";
 import CTASection from "../components/CTASection";
+import DesignShowcase from "../components/DesignShowcase";
 
 const packages = [
   {
@@ -95,6 +96,8 @@ export default function Services() {
             </p>
           </div>
         </SectionWrapper>
+
+        <DesignShowcase />
 
         <CTASection
           title="Ready to Scale Your Healthcare Practice?"
